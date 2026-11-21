@@ -1,0 +1,31 @@
+name: Inspect Amethyst source
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Amethyst source
+        uses: actions/checkout@v4
+        with:
+          repository: AngelAuraMC/Amethyst-iOS
+          path: amethyst
+
+      - name: Source files
+        working-directory: amethyst
+        run: |
+          find Natives -type f \( -name '*.m' -o -name '*.h' -o -name '*.c' \) | sort | head -120
+
+      - name: Shift and modifier handling
+        working-directory: amethyst
+        run: |
+          grep -rn -i "shift" Natives --include=*.m --include=*.h --include=*.c | head -40
+          echo "-----"
+          grep -rn "pressesBegan\|pressesEnded\|modifierFlags" Natives --include=*.m --include=*.h | head -30
+
+      - name: Mouse button sending
+        working-directory: amethyst
+        run: |
+          grep -rn -i "SendMouseButton" Natives JavaApp --include=*.m --include=*.h --include=*.c --include=*.java | head -30
